@@ -10,7 +10,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
@@ -47,6 +47,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var R = require('../../lib/_stream_readable');
 
@@ -280,7 +281,7 @@ forEach([1, 2, 3, 4, 5, 6, 7, 8, 9], function (SPLIT) {
   w1.write = function (chunk) {
     assert.strictEqual(chunk[0], 'one');
     w1.emit('close');
-    process.nextTick(function () {
+    queueMicrotask(function () {
       _r3.pipe(w2);
 
       _r3.pipe(w3);
@@ -382,7 +383,7 @@ forEach([1, 2, 3, 4, 5, 6, 7, 8, 9], function (SPLIT) {
 
   _r5.read();
 
-  process.nextTick(function () {
+  queueMicrotask(function () {
     assert.strictEqual(called, true);
   });
 }

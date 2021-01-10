@@ -27,6 +27,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -101,7 +102,7 @@ var Readable = require('../../').Readable;
   _r3._read = function () {
     var _this = this;
 
-    process.nextTick(function () {
+    queueMicrotask(function () {
       if (!underlyingData.length) {
         _this.push(null);
       } else {

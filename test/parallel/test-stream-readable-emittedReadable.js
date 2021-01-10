@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -28,16 +29,16 @@ readable.on('readable', common.mustCall(function () {
 
 assert.strictEqual(readable._readableState.emittedReadable, false); // These trigger a single 'readable', as things are batched up
 
-process.nextTick(common.mustCall(function () {
+queueMicrotask(common.mustCall(function () {
   readable.push('foo');
 }));
-process.nextTick(common.mustCall(function () {
+queueMicrotask(common.mustCall(function () {
   readable.push('bar');
 })); // these triggers two readable events
 
 setImmediate(common.mustCall(function () {
   readable.push('quo');
-  process.nextTick(common.mustCall(function () {
+  queueMicrotask(common.mustCall(function () {
     readable.push(null);
   }));
 }));
@@ -65,7 +66,7 @@ flowing.on('data', common.mustCall(function () {
 flowing.push('foooo');
 flowing.push('bar');
 flowing.push('quo');
-process.nextTick(common.mustCall(function () {
+queueMicrotask(common.mustCall(function () {
   flowing.push(null);
 }));
 ;

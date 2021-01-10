@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -40,10 +41,10 @@ asyncReadable.on('readable', common.mustCall(function () {
     assert.strictEqual(asyncReadable._readableState.needReadable, true);
   }
 }, 2));
-process.nextTick(common.mustCall(function () {
+queueMicrotask(common.mustCall(function () {
   asyncReadable.push('foooo');
 }));
-process.nextTick(common.mustCall(function () {
+queueMicrotask(common.mustCall(function () {
   asyncReadable.push('bar');
 }));
 setImmediate(common.mustCall(function () {
@@ -57,7 +58,7 @@ var flowing = new Readable({
 flowing.push('foooo');
 flowing.push('bar');
 flowing.push('quo');
-process.nextTick(common.mustCall(function () {
+queueMicrotask(common.mustCall(function () {
   flowing.push(null);
 })); // When the buffer already has enough data, and the stream is
 // in flowing mode, there is no need for the readable event.
@@ -77,13 +78,13 @@ slowProducer.on('readable', common.mustCall(function () {
     assert.strictEqual(slowProducer._readableState.needReadable, false);
   }
 }, 4));
-process.nextTick(common.mustCall(function () {
+queueMicrotask(common.mustCall(function () {
   slowProducer.push('foo');
-  process.nextTick(common.mustCall(function () {
+  queueMicrotask(common.mustCall(function () {
     slowProducer.push('foo');
-    process.nextTick(common.mustCall(function () {
+    queueMicrotask(common.mustCall(function () {
       slowProducer.push('foo');
-      process.nextTick(common.mustCall(function () {
+      queueMicrotask(common.mustCall(function () {
         slowProducer.push(null);
       }));
     }));

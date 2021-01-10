@@ -1,6 +1,6 @@
 'use strict';
 var common = require('../common');
-
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask') 
 var Stream = require('../../');
 var Readable = require('../../').Readable;
 module.exports = function (t) {
@@ -23,7 +23,7 @@ module.exports = function (t) {
     w.write = function(c) {
       writes += c.length;
       buffered += c.length;
-      process.nextTick(drain);
+      queueMicrotask(drain);
       return false;
     };
 

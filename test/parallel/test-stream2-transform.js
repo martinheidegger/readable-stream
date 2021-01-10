@@ -27,6 +27,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -345,7 +346,7 @@ var Transform = require('../../lib/_stream_transform');
   };
 
   _pt9.once('readable', function () {
-    process.nextTick(function () {
+    queueMicrotask(function () {
       _pt9.write(bufferShim.from('d'));
 
       _pt9.write(bufferShim.from('ef'), common.mustCall(function () {
@@ -504,7 +505,7 @@ var Transform = require('../../lib/_stream_transform');
   jp.end(); // read one more time to get the 'end' event
 
   jp.read();
-  process.nextTick(common.mustCall(function () {
+  queueMicrotask(common.mustCall(function () {
     assert.strictEqual(ended, true);
   }));
 }
@@ -546,7 +547,7 @@ var Transform = require('../../lib/_stream_transform');
   js.end(); // read one more time to get the 'end' event
 
   js.read();
-  process.nextTick(common.mustCall(function () {
+  queueMicrotask(common.mustCall(function () {
     assert.strictEqual(_ended, true);
   }));
 }

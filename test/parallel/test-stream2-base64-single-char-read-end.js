@@ -27,6 +27,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var R = require('../../lib/_stream_readable');
 
@@ -44,7 +45,7 @@ var accum = [];
 src._read = function (n) {
   if (!hasRead) {
     hasRead = true;
-    process.nextTick(function () {
+    queueMicrotask(function () {
       src.push(bufferShim.from('1'));
       src.push(null);
     });

@@ -8,6 +8,7 @@ var bufferShim = require('safe-buffer').Buffer;
 var common = require('../common'); // This test ensures that Readable stream will continue to call _read
 // for streams with highWaterMark === 0 once the stream returns data
 // by calling push() asynchronously.
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 
 var _require = require('../../'),
@@ -17,7 +18,7 @@ var count = 5;
 var r = new Readable({
   // Called 6 times: First 5 return data, last one signals end of stream.
   read: common.mustCall(function () {
-    process.nextTick(common.mustCall(function () {
+    queueMicrotask(common.mustCall(function () {
       if (count--) r.push('a');else r.push(null);
     }));
   }, 6),

@@ -27,6 +27,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var Readable = require('../../lib/_stream_readable');
 
@@ -151,7 +152,7 @@ function fromArray(list) {
   _r4._read = function (n) {
     var item = _list2.shift();
 
-    process.nextTick(function () {
+    queueMicrotask(function () {
       _r4.push(item || null);
     });
   };
@@ -325,7 +326,7 @@ function fromArray(list) {
   _w2._write = function (chunk, encoding, cb) {
     _list6.push(chunk);
 
-    process.nextTick(cb);
+    queueMicrotask(cb);
   };
 
   _w2.on('finish', common.mustCall(function () {
@@ -354,7 +355,7 @@ function fromArray(list) {
 
   _w3._write = function (chunk, encoding, cb) {
     assert.strictEqual(chunk, 'foo');
-    process.nextTick(function () {
+    queueMicrotask(function () {
       called = true;
       cb();
     });

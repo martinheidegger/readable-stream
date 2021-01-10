@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -21,7 +22,7 @@ var w = new stream.Writable({
     }, 100);
   }),
   write: function write(chunk, e, cb) {
-    process.nextTick(cb);
+    queueMicrotask(cb);
   }
 });
 w.on('finish', common.mustCall(function () {

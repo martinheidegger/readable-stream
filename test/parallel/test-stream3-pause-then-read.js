@@ -27,6 +27,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -45,7 +46,7 @@ var chunks = totalChunks;
 
 r._read = function (n) {
   console.log('_read called', chunks);
-  if (!(chunks % 2)) setImmediate(push);else if (!(chunks % 3)) process.nextTick(push);else push();
+  if (!(chunks % 2)) setImmediate(push);else if (!(chunks % 3)) queueMicrotask(push);else push();
 };
 
 var totalPushed = 0;

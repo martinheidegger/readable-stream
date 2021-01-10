@@ -4,6 +4,7 @@
 require('@babel/polyfill');
 
 var util = require('util');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask')
 
 for (var i in util) {
   exports[i] = util[i];
@@ -43,7 +44,7 @@ function hijackStdWritable(name, listener) {
     try {
       listener(data);
     } catch (e) {
-      process.nextTick(function () {
+      queueMicrotask(function () {
         throw e;
       });
     }

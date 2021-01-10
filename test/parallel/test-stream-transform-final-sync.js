@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -23,14 +24,14 @@ var stream = new stream.Transform({
   },
   final: function endCallback(done) {
     // part 1
-    process.nextTick(function () {
+    queueMicrotask(function () {
       // part 2
       done();
     });
   },
   flush: function flushCallback(done) {
     // part 1
-    process.nextTick(function () {
+    queueMicrotask(function () {
       // part 2
       done();
     });
@@ -71,7 +72,7 @@ var t = new stream.Transform({
     this.push(state); // transformCallback part 2
 
     assert.strictEqual(++state, chunk + 2);
-    process.nextTick(next);
+    queueMicrotask(next);
   }, 3),
   final: common.mustCall(function (done) {
     state++; // finalCallback part 1
@@ -86,7 +87,7 @@ var t = new stream.Transform({
     state++; // fluchCallback part 1
 
     assert.strictEqual(state, 12);
-    process.nextTick(function () {
+    queueMicrotask(function () {
       state++; // fluchCallback part 2
 
       assert.strictEqual(state, 15);

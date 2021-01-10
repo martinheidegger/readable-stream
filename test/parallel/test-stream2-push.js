@@ -27,6 +27,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -70,7 +71,7 @@ function readStart() {
 function readStop() {
   console.error('readStop');
   reading = false;
-  process.nextTick(function () {
+  queueMicrotask(function () {
     var r = stream.read();
     if (r !== null) writer.write(r);
   });
@@ -85,7 +86,7 @@ var expectWritten = ['asdfgasdfgasdfgasdfg', 'asdfgasdfgasdfgasdfg', 'asdfgasdfg
 writer._write = function (chunk, encoding, cb) {
   console.error("WRITE ".concat(chunk));
   written.push(chunk);
-  process.nextTick(cb);
+  queueMicrotask(cb);
 };
 
 writer.on('finish', finish); // now emit some chunks.

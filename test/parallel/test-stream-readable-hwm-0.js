@@ -15,6 +15,8 @@ var assert = require('assert/');
 var _require = require('../../'),
     Readable = _require.Readable;
 
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
+
 var r = new Readable({
   // must be called only once upon setting 'readable' listener
   read: common.mustCall(),
@@ -28,7 +30,7 @@ r.on('readable', common.mustCall(function () {
   assert.strictEqual(pushedNull, true);
 }));
 r.on('end', common.mustCall());
-process.nextTick(function () {
+queueMicrotask(function () {
   assert.strictEqual(r.read(), null);
   pushedNull = true;
   r.push(null);

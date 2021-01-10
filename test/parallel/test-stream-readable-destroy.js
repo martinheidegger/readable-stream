@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var _require = require('../../'),
     Readable = _require.Readable;
@@ -113,7 +114,7 @@ var assert = require('assert/');
     var _this = this;
 
     assert.strictEqual(err, null);
-    process.nextTick(function () {
+    queueMicrotask(function () {
       _this.push(null);
 
       cb();

@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -43,7 +44,7 @@ var Readable = require('../../').Readable;
     assert.strictEqual(state.ended, !state.reading);
     var data = readable.read();
     if (data === null) // reached end of stream
-      process.nextTick(common.mustCall(onStreamEnd, 1));
+      queueMicrotask(common.mustCall(onStreamEnd, 1));
   }, 2));
   readable.on('end', common.mustCall(onStreamEnd));
   readable.push('pushed');
@@ -138,7 +139,7 @@ var Readable = require('../../').Readable;
 
   assert.strictEqual(_state2.flowing, false); // wait for nextTick, so the readableListener flag resets
 
-  process.nextTick(function () {
+  queueMicrotask(function () {
     _readable2.resume(); // stop emitting 'data' events
 
 

@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var _require = require('../../'),
     Readable = _require.Readable,
@@ -17,7 +18,7 @@ var _require = require('../../'),
   var rs = new Readable({
     objectMode: true,
     read: function read() {
-      if (ticks-- > 0) return process.nextTick(function () {
+      if (ticks-- > 0) return queueMicrotask(function () {
         return rs.push({});
       });
       rs.push({});
@@ -59,7 +60,7 @@ var _require = require('../../'),
   var wrapper = new Readable({
     objectMode: true,
     read: function read() {
-      process.nextTick(function () {
+      queueMicrotask(function () {
         var data = pt.read();
 
         if (data === null) {

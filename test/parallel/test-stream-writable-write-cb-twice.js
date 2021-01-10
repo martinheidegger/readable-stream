@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var _require = require('../../'),
     Writable = _require.Writable;
@@ -28,7 +29,7 @@ var _require = require('../../'),
   var _writable = new Writable({
     write: common.mustCall(function (buf, enc, cb) {
       cb();
-      process.nextTick(function () {
+      queueMicrotask(function () {
         common.expectsError(cb, {
           code: 'ERR_MULTIPLE_CALLBACK',
           type: Error
@@ -43,8 +44,8 @@ var _require = require('../../'),
   // Async + Async
   var _writable2 = new Writable({
     write: common.mustCall(function (buf, enc, cb) {
-      process.nextTick(cb);
-      process.nextTick(function () {
+      queueMicrotask(cb);
+      queueMicrotask(function () {
         common.expectsError(cb, {
           code: 'ERR_MULTIPLE_CALLBACK',
           type: Error

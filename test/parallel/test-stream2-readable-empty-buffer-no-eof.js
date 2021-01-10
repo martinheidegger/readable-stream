@@ -27,6 +27,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -64,7 +65,7 @@ function test1() {
 
       case 3:
         setTimeout(r.read.bind(r, 0), 50);
-        return process.nextTick(function () {
+        return queueMicrotask(function () {
           return r.push(bufferShim.alloc(0));
         });
 

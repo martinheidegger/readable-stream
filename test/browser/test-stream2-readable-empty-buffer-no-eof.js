@@ -1,6 +1,6 @@
 'use strict';
 var common = require('../common');
-
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask') 
 var Readable = require('../../').Readable;
 
 module.exports = function (t) {
@@ -32,7 +32,7 @@ module.exports = function (t) {
           return r.push(Buffer.alloc(0)); // Not-EOF!
         case 3:
           setTimeout(r.read.bind(r, 0), 50);
-          return process.nextTick(function() {
+          return queueMicrotask(function() {
             return r.push(Buffer.alloc(0));
           });
         case 4:

@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -33,7 +34,7 @@ assert.strictEqual(writable._writableState.bufferedRequestCount, 1); // first un
 writable.uncork();
 assert.strictEqual(writable._writableState.corked, 1);
 assert.strictEqual(writable._writableState.bufferedRequestCount, 1);
-process.nextTick(uncork); // the second chunk is buffered, because we uncork at the end of tick
+queueMicrotask(uncork); // the second chunk is buffered, because we uncork at the end of tick
 
 writable.write('second chunk');
 assert.strictEqual(writable._writableState.corked, 1);

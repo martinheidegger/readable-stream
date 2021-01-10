@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var _require = require('../../'),
     Writable = _require.Writable;
@@ -121,7 +122,7 @@ var assert = require('assert/');
     var _this = this;
 
     assert.strictEqual(err, null);
-    process.nextTick(function () {
+    queueMicrotask(function () {
       _this.end();
 
       cb();
@@ -189,7 +190,7 @@ var assert = require('assert/');
 {
   var writable = new Writable({
     destroy: common.mustCall(function (err, cb) {
-      process.nextTick(cb, new Error('kaboom 1'));
+      queueMicrotask(cb.bind(null, new Error('kaboom 1')));
     }),
     write: function write(chunk, enc, cb) {
       cb();

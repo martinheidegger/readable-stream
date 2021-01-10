@@ -10,7 +10,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
@@ -47,6 +47,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var W = require('../../lib/_stream_writable');
 
@@ -228,7 +229,7 @@ for (var i = 0; i < chunks.length; i++) {
   });
 
   _tw5.on('finish', common.mustCall(function () {
-    process.nextTick(common.mustCall(function () {
+    queueMicrotask(common.mustCall(function () {
       // got chunks in the right order
       assert.deepStrictEqual(_tw5.buffer, chunks); // called all callbacks
 
@@ -335,7 +336,7 @@ for (var i = 0; i < chunks.length; i++) {
 
   _w.end('and so is this');
 
-  process.nextTick(common.mustCall(function () {
+  queueMicrotask(common.mustCall(function () {
     assert.strictEqual(_gotError2, true);
   }));
 }
@@ -409,7 +410,7 @@ for (var i = 0; i < chunks.length; i++) {
   var _w5 = new W();
 
   _w5._write = function (chunk, e, cb) {
-    process.nextTick(cb);
+    queueMicrotask(cb);
   };
 
   _w5.on('finish', common.mustCall());
@@ -432,7 +433,7 @@ for (var i = 0; i < chunks.length; i++) {
   });
 
   _w6._write = function (chunk, e, cb) {
-    process.nextTick(cb);
+    queueMicrotask(cb);
   };
 
   _w6.on('finish', common.mustCall(function () {

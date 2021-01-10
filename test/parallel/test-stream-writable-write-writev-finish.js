@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -166,7 +167,7 @@ var stream = require('../../'); // ensure consistency between the finish event w
   var w = new stream.Writable();
 
   w._write = function (chunk, encoding, cb) {
-    process.nextTick(cb);
+    queueMicrotask(cb);
   };
 
   w.on('error', common.mustCall());
@@ -179,7 +180,7 @@ var stream = require('../../'); // ensure consistency between the finish event w
   var _w = new stream.Writable();
 
   _w._write = function (chunk, encoding, cb) {
-    process.nextTick(cb);
+    queueMicrotask(cb);
   };
 
   _w.on('error', common.mustCall());

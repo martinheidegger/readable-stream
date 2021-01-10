@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common'); // Testing Readable Stream resumeScheduled state
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 
 var assert = require('assert/');
@@ -25,7 +26,7 @@ var _require = require('../../'),
 
   r.pipe(w);
   assert.strictEqual(r._readableState.resumeScheduled, true);
-  process.nextTick(common.mustCall(function () {
+  queueMicrotask(common.mustCall(function () {
     assert.strictEqual(r._readableState.resumeScheduled, false);
   }));
 }
@@ -46,7 +47,7 @@ var _require = require('../../'),
   }));
 
   assert.strictEqual(_r._readableState.resumeScheduled, true);
-  process.nextTick(common.mustCall(function () {
+  queueMicrotask(common.mustCall(function () {
     assert.strictEqual(_r._readableState.resumeScheduled, false);
   }));
 }
@@ -68,7 +69,7 @@ var _require = require('../../'),
     assert.strictEqual(_r2._readableState.resumeScheduled, false);
   }));
 
-  process.nextTick(common.mustCall(function () {
+  queueMicrotask(common.mustCall(function () {
     assert.strictEqual(_r2._readableState.resumeScheduled, false);
   }));
 }

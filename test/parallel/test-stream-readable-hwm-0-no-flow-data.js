@@ -13,6 +13,7 @@ var common = require('../common'); // Ensure that subscribing the 'data' event w
 
 
 var assert = require('assert/');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var _require = require('../../'),
     Readable = _require.Readable;
@@ -23,7 +24,7 @@ var calls = [];
 var r = new Readable({
   read: common.mustCall(function () {
     calls.push('_read:' + streamData[0]);
-    process.nextTick(function () {
+    queueMicrotask(function () {
       calls.push('push:' + streamData[0]);
       r.push(streamData.shift());
     });
@@ -46,7 +47,7 @@ r.on('end', common.mustCall(function () {
 }));
 assert.strictEqual(r.readableFlowing, false); // The stream emits the events asynchronously but that's not guaranteed to
 // happen on the next tick (especially since the _read implementation above
-// uses process.nextTick).
+// uses queueMicrotask).
 //
 // We use setImmediate here to give the stream enough time to emit all the
 // events it's about to emit.
@@ -82,7 +83,7 @@ setImmediate(function () {
     // to it are noted and acknowledged in the future.
 
     assert.deepStrictEqual(calls, ['_read:a', 'push:a', 'readable', 'data:a', '_read:null', 'push:null', 'readable']);
-    process.nextTick(function () {
+    queueMicrotask(function () {
       assert.deepStrictEqual(calls, ['_read:a', 'push:a', 'readable', 'data:a', '_read:null', 'push:null', 'readable', 'end']);
     });
   });

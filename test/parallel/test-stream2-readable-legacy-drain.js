@@ -27,6 +27,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var assert = require('assert/');
 
@@ -49,7 +50,7 @@ var buffered = 0;
 
 w.write = function (c) {
   buffered += c.length;
-  process.nextTick(drain);
+  queueMicrotask(drain);
   return false;
 };
 

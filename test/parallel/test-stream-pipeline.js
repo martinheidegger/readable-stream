@@ -10,6 +10,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var _require = require('../../'),
     Stream = _require.Stream,
@@ -115,7 +116,7 @@ var promisify = require('util-promisify');
 
   var transform = new Transform({
     transform: function transform(data, enc, cb) {
-      process.nextTick(cb, new Error('kaboom'));
+      queueMicrotask(cb.bind(null, new Error('kaboom')));
     }
   });
 
@@ -222,7 +223,7 @@ var promisify = require('util-promisify');
   var badSink = new Writable({
     write: function write(data, enc, cb) {
       cnt--;
-      if (cnt === 0) process.nextTick(cb, new Error('kaboom'));else cb();
+      if (cnt === 0) queueMicrotask(cb.bind(null, new Error('kaboom')));else cb();
     }
   });
 
@@ -291,7 +292,7 @@ var promisify = require('util-promisify');
   var ws = new Writable({
     write: function write(data, enc, cb) {
       _cnt--;
-      if (_cnt === 0) return process.nextTick(cb, new Error('kaboom'));
+      if (_cnt === 0) return queueMicrotask(cb.bind(null, new Error('kaboom')));
       cb();
     }
   });
@@ -438,7 +439,7 @@ var promisify = require('util-promisify');
 
   var _transform = new Transform({
     transform: function transform(data, enc, cb) {
-      process.nextTick(cb, new Error('kaboom'));
+      queueMicrotask(cb.bind(null, new Error('kaboom')));
     }
   });
 

@@ -9,13 +9,14 @@ var _require = require('../../'),
     Readable = _require.Readable;
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var ticks = 18;
 var expectedData = 19;
 var rs = new Readable({
   objectMode: true,
   read: function read() {
-    if (ticks-- > 0) return process.nextTick(function () {
+    if (ticks-- > 0) return queueMicrotask(function () {
       return rs.push({});
     });
     rs.push({});

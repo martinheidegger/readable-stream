@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 var common = require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var stream = require('../../');
 
@@ -21,7 +22,7 @@ var writable = new stream.Writable({
       // We should check if awaitDrain counter is increased in the next
       // tick, because awaitDrain is incremented after this method finished
 
-      process.nextTick(function () {
+      queueMicrotask(function () {
         assert.strictEqual(readable._readableState.awaitDrain, 1);
       });
     }

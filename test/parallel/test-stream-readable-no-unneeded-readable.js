@@ -60,7 +60,7 @@ function test(r) {
         r.push(chunk);
       } else {
         // asynchronous call
-        process.nextTick(function () {
+        queueMicrotask(function () {
           return r.push(null);
         });
       }

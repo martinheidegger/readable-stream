@@ -6,6 +6,7 @@ var bufferShim = require('safe-buffer').Buffer;
 
 
 require('../common');
+var queueMicrotask = require('../../lib/internal/streams/queue-microtask');
 
 var _require = require('../../'),
     Readable = _require.Readable;
@@ -24,7 +25,7 @@ var assert = require('assert/');
   r.on('data', function (chunk) {
     return chunks.push(chunk);
   });
-  process.nextTick(function () {
+  queueMicrotask(function () {
     assert.deepStrictEqual(chunks, ['ab']);
   });
 }
@@ -51,7 +52,7 @@ var assert = require('assert/');
     return _chunks.push(chunk);
   });
 
-  process.nextTick(function () {
+  queueMicrotask(function () {
     assert.deepStrictEqual(_chunks, ['🎉']);
   });
 }
@@ -78,7 +79,7 @@ var assert = require('assert/');
     return _chunks2.push(chunk);
   });
 
-  process.nextTick(function () {
+  queueMicrotask(function () {
     assert.deepStrictEqual(_chunks2, ['🎉']);
   });
 }
